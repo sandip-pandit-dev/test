@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <button onclick="startCamera()">Start Camera</button>
+        <div>
+          <h3>Captured Image:</h3>
+          <img src="photo" id="photoId" alt="Captured Photo" width="300">
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        let photo = null;
+        function startCamera() {
+            console.log('start')
+            let photoBox = document.getElementById('photoId');
+            navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+                const videoElement = document.createElement('video');
+                videoElement.srcObject = stream;
+                videoElement.play();
+
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+
+                // Take snapshot when button is clicked
+                const captureButton = document.createElement('button');
+                captureButton.textContent = 'Capture';
+                captureButton.onclick = () => {
+                    canvas.width = videoElement.videoWidth;
+                    canvas.height = videoElement.videoHeight;
+                    context?.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+                    photo = canvas.toDataURL('image/png'); // Capture the image as base64
+                    console.log('photo: ', photo)
+                    photoBox.src = photo
+                };
+                document.body.appendChild(videoElement);
+                document.body.appendChild(captureButton);
+            })
+            .catch((err) => {
+                console.error('Camera access error:', err);
+            });
+        }
+    </script>
+</body>
+</html>
